@@ -1,0 +1,136 @@
+SIMULATION VISUALIZATION DESCRIPTION
+Project: Precision 2-DOF Planar Robotic Arm for Laparoscopic Tool Positioning
+Author: Aryan
+Internship Assignment: Articulus Surgical Mechatronics Internship
+
+This document explains the visual elements present in the simulation video (simulation.mp4) and maps them to the engineering concepts and calculations described in the project documents.
+
+---
+
+1. MAIN ARM CANVAS (TOP-LEFT)
+
+The main display shows the simulated 2-DOF planar robotic arm moving through a sequence of surgical target positions.
+
+• Blue Link – Link 1 (Shoulder Joint)
+Length: 250 mm
+Actuator: Maxon EC-45 brushless motor with planetary gearbox
+
+• Green Link – Link 2 (Elbow Joint)
+Length: 180 mm
+Actuator: Maxon EC-32 brushless motor with planetary gearbox
+
+The dashed circular annular boundary represents the reachable workspace of the arm:
+
+Minimum radius  = |L1 − L2| = 70 mm
+Maximum radius  = L1 + L2  = 430 mm
+
+These limits are derived from the robot geometry specified in **Document 1: Assumptions & Specifications**.
+
+The yellow curve shows the end-effector trajectory as the robot moves between target points within the surgical field.
+
+---
+
+2. SINGULARITY TEST (TARGET T5)
+
+When the robot is commanded to the position:
+
+(430 mm, 0 mm)
+
+the arm becomes fully extended and the elbow angle approaches:
+
+θ₂ ≈ 0°
+
+At this configuration the Jacobian determinant approaches zero:
+
+|det(J)| → 0
+
+This corresponds to a **kinematic singularity**, where motion control becomes unstable.
+
+When this occurs, the simulation triggers a safety response:
+
+• Entire display flashes red
+• Warning message appears:
+"⚠ SINGULARITY DETECTED | |det(J)| → 0 | Motion BLOCKED"
+• Link 2 turns red
+
+This behaviour corresponds to **Safety Layer 3 (Singularity Detection)** implemented in the control software.
+
+---
+
+3. TORQUE MONITOR BARS (TOP-RIGHT)
+
+The torque bars visualize the real-time torque applied at each joint.
+
+Blue Bar
+Joint 1 (Shoulder)
+Motor: Maxon EC-45
+Torque limit: 8.0 N·m
+
+Green Bar
+Joint 2 (Elbow)
+Motor: Maxon EC-32
+Torque limit: 3.0 N·m
+
+Purple Overlay
+Represents the gravity compensation torque applied by the controller.
+
+The dashed red lines indicate the actuator torque limits derived from:
+
+• **Document 2 – Torque Calculations**
+• **Document 3 – Motor Selection**
+
+If the commanded torque approaches these limits, the bars turn red to indicate actuator saturation risk.
+
+---
+
+4. ERROR HISTORY GRAPHS (BOTTOM-LEFT / CENTRE)
+
+These plots show the real-time joint position error during control operation.
+
+• Left graph – Joint 1 position error
+• Right graph – Joint 2 position error
+
+The teal shaded band represents the acceptable tolerance region:
+
+±0.15°
+
+When a new target is commanded:
+
+• the error briefly spikes
+• the PID controller drives the error toward zero
+
+The resulting response curve demonstrates stable convergence typical of a **Kp-dominant PID controller with gravity compensation feedforward**, as described in the **Position Control README**.
+
+---
+
+5. STATUS PANEL (BOTTOM-RIGHT)
+
+This panel displays real-time system telemetry similar to a robotics control console.
+
+Displayed parameters include:
+
+• Joint angles (θ1, θ2)
+• End-effector position (X, Y) in millimetres
+• Joint torques
+• Gravity compensation values
+
+The display uses a monospaced layout to emulate a real embedded robotics interface.
+
+Motor labels are also shown:
+
+• Maxon EC-45 – Joint 1 actuator
+• Maxon EC-32 – Joint 2 actuator
+
+---
+
+SUMMARY
+
+The simulation demonstrates the full robotic control pipeline described in the project:
+
+• Robot kinematics and workspace constraints
+• PID position control with gravity compensation
+• Actuator torque monitoring
+• Safety handling for singular configurations
+• Real-time system telemetry
+
+The visual elements correspond directly to the design assumptions, torque calculations, motor selection, and control architecture documented in the project report.
